@@ -1,4 +1,4 @@
-import compareWords from "./index.js";
+import compareWords from "./compareWords.js";
 
 /*
 1.Exakta träffar
