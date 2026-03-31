@@ -5,6 +5,9 @@ function Game() {
     const [guess, setGuess] = useState("");
     const [history, setHistory] = useState([]);
     const [isGameOver, setIsGameOver] = useState(false);
+    const [startTime, setStartTime] = useState(null);
+    const [endTime, setEndTime] = useState(null);
+
 
 
     useEffect(() => {
@@ -12,6 +15,7 @@ function Game() {
             .then((res) => res.json())
             .then((data) => {
                 setWord(data.word);
+                setStartTime(Date.now());
             });
     }, []);
 
@@ -35,6 +39,7 @@ function Game() {
 
         if (isWin) {
             setIsGameOver(true);
+            setEndTime(Date.now());
         }
 
 
@@ -50,20 +55,23 @@ function Game() {
         setHistory([]);
         setGuess("");
         setIsGameOver(false);
+        setStartTime(Date.now());
+        setEndTime(null);
+
     };
 
     return (
         <div>
             <h1>Wordle</h1>
-            {isGameOver && <h2>GRATTIS, du gissade rätt!</h2>}
-
-            {
-                isGameOver && (
+            {isGameOver && (
+                <>
+                    <h2>GRATTIS, du gissade rätt!</h2>
+                    <p>Tid: {Math.floor((endTime - startTime) / 1000)} sekunder</p>
                     <button onClick={startNewGame}>
                         New Game
                     </button>
-                )
-            }
+                </>
+            )}
 
 
 
