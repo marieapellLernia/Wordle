@@ -7,7 +7,7 @@ function Game() {
     const [isGameOver, setIsGameOver] = useState(false);
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
-
+    const [playerName, setPlayerName] = useState("");
 
 
     useEffect(() => {
@@ -47,6 +47,25 @@ function Game() {
         setGuess("");
     };
 
+    const saveScore = async () => {
+        const time = Math.floor((endTime - startTime) / 1000);
+
+        await fetch("http://localhost:5080/api/highscore", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                name: playerName,
+                time,
+                guesses: history.length,
+            }),
+        });
+
+        alert("Score sparad!");
+    };
+
+
     const startNewGame = async () => {
         const res = await fetch("http://localhost:5080/api/word");
         const data = await res.json();
@@ -67,6 +86,14 @@ function Game() {
                 <>
                     <h2>GRATTIS, du gissade rätt!</h2>
                     <p>Tid: {Math.floor((endTime - startTime) / 1000)} sekunder</p>
+
+                    <input
+                        placeholder="Ditt namn"
+                        value={playerName}
+                        onChange={(e) => setPlayerName(e.target.value)}
+                    />
+
+                    <button onClick={saveScore}>Spara score</button>
                     <button onClick={startNewGame}>
                         New Game
                     </button>
