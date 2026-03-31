@@ -4,6 +4,8 @@ function Game() {
     const [word, setWord] = useState("");
     const [guess, setGuess] = useState("");
     const [history, setHistory] = useState([]);
+    const [isGameOver, setIsGameOver] = useState(false);
+
 
     useEffect(() => {
         fetch("http://localhost:5080/api/word")
@@ -14,6 +16,8 @@ function Game() {
     }, []);
 
     const handleGuess = async () => {
+        if (isGameOver) return;
+
         const res = await fetch("http://localhost:5080/api/guess", {
             method: "POST",
             headers: {
@@ -27,28 +31,75 @@ function Game() {
 
         const data = await res.json();
 
+        const isWin = data.every(letter => letter.result === "correct");
+
+        if (isWin) {
+            setIsGameOver(true);
+        }
+
+
         setHistory([...history, data]);
         setGuess("");
+    };
+
+    const startNewGame = async () => {
+        const res = await fetch("http://localhost:5080/api/word");
+        const data = await res.json();
+
+        setWord(data.word);
+        setHistory([]);
+        setGuess("");
+        setIsGameOver(false);
     };
 
     return (
         <div>
             <h1>Wordle</h1>
+            {isGameOver && <h2>GRATTIS, du gissade rätt!</h2>}
+
+            {
+                isGameOver && (
+                    <button onClick={startNewGame}>
+                        New Game
+                    </button>
+                )
+            }
+
+
 
             <input
+                disabled={isGameOver}
                 value={guess}
                 onChange={(e) => setGuess(e.target.value.toUpperCase())}
-                placeholder="Enter guess"
+                placeholder="Gissa ordet"
             />
 
-            <button onClick={handleGuess}>Guess</button>
+            <button onClick={handleGuess} disabled={isGameOver}>Gissa</button>
 
             <div>
                 {history.map((row, i) => (
                     <div key={i}>
                         {row.map((letterObj, j) => (
-                            <span key={j} style={{ margin: "5px" }}>
-                                {letterObj.letter} ({letterObj.result})
+                            <span key={j}
+                                style={{
+                                    display: "inline-block",
+                                    width: "40px",
+                                    height: "40px",
+                                    lineHeight: "40px",
+                                    borderRadius: "15px",
+                                    margin: "5px",
+                                    textAlign: "center",
+                                    fontWeight: "bold",
+                                    fontFamily: "Arial, sans-serif",
+                                    color: "white",
+                                    backgroundColor:
+                                        letterObj.result === "correct"
+                                            ? "#44AF69"
+                                            : letterObj.result === "misplaced"
+                                                ? "#FCAB10"
+                                                : "#D91E36",
+                                }}>
+                                {letterObj.letter}
                             </span>
                         ))}
                     </div>
@@ -57,5 +108,8 @@ function Game() {
         </div>
     );
 }
+
+
+
 
 export default Game;
