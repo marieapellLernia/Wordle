@@ -1,26 +1,24 @@
 import express from "express";
+import Highscore from "../models/Highscore.js";
 
 const router = express.Router();
 
-const highscores = [];
-
-router.post("/highscore", (req, res) => {
-  const { name, time, guesses } = req.body;
-
-  const newScore = {
-    name,
-    time,
-    guesses,
-    date: new Date(),
-  };
-
-  highscores.push(newScore);
-
-  res.json({ message: "Saved!" });
+router.get("/highscore", async (req, res) => {
+    try {
+  const scores = await Highscore.find();
+  res.json(scores);
+   } catch (err) {
+    res.status(500).json([]);
+   }
 });
 
-router.get("/highscores", (req, res) => {
-  res.json(highscores);
+router.post("/highscore", async (req, res) => {
+  console.log("Saving score:", req.body);
+
+  const score = new Highscore(req.body);
+  await score.save();
+
+  res.json({ success: true, message: "Score saved!" });
 });
 
 export default router;
