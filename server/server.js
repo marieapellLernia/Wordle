@@ -15,12 +15,6 @@ app.use(express.json());
 app.use("/api", gameRoutes);
 app.use("/api", highscoreRoutes);
 
-app.get("/api/word", (req, res) => {
-    res.json({
-        word: "CYKLA"
-    });
-});
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

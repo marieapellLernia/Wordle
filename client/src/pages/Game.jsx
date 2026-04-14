@@ -1,23 +1,18 @@
 import { useEffect, useState } from "react";
 
 function Game() {
-    const [word, setWord] = useState("");
     const [guess, setGuess] = useState("");
     const [history, setHistory] = useState([]);
     const [isGameOver, setIsGameOver] = useState(false);
-    const [startTime, setStartTime] = useState(null);
-    const [endTime, setEndTime] = useState(null);
+    const [time, setTime] = useState(null);
     const [playerName, setPlayerName] = useState("");
+    const [wordLength, setWordLength] = useState(5);
+    const [allowRepeats, setAllowRepeats] = useState(true);
 
 
     useEffect(() => {
-        fetch("http://localhost:5080/api/word")
-            .then((res) => res.json())
-            .then((data) => {
-                setWord(data.word);
-                setStartTime(Date.now());
-            });
-    }, []);
+        startNewGame();
+    }, [wordLength, allowRepeats]);
 
     const handleGuess = async () => {
         if (isGameOver) return;
@@ -28,27 +23,32 @@ function Game() {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                guess,
-                correctWord: word,
+                guess
             }),
         });
 
         const data = await res.json();
 
-        const isWin = data.every(letter => letter.result === "correct");
+        setHistory(prev => [...prev, data.result]);
 
-        if (isWin) {
-            setIsGameOver(true);
-            setEndTime(Date.now());
+        if (!res.ok) {
+            console.error(data.error);
+            return;
         }
 
+        if (data.isWin) {
+            setIsGameOver(true);
+            setTime(data.time);
+        }
 
-        setHistory([...history, data]);
         setGuess("");
     };
 
     const saveScore = async () => {
-        const time = Math.floor((endTime - startTime) / 1000);
+        if (!playerName) {
+            alert("Skrv ditt namn!");
+            return;
+        }
 
         await fetch("http://localhost:5080/api/highscore", {
             method: "POST",
@@ -58,7 +58,7 @@ function Game() {
             body: JSON.stringify({
                 name: playerName,
                 time,
-                guesses: history.length,
+                guesses: history,
             }),
         });
 
@@ -67,25 +67,22 @@ function Game() {
 
 
     const startNewGame = async () => {
-        const res = await fetch("http://localhost:5080/api/word");
-        const data = await res.json();
+        await fetch(`http://localhost:5080/api/word?length=${wordLength}&repeat=${allowRepeats}`);
 
-        setWord(data.word);
         setHistory([]);
         setGuess("");
         setIsGameOver(false);
-        setStartTime(Date.now());
-        setEndTime(null);
+        setTime(null);
 
     };
 
     return (
-        <div>
+        <div style={{ maxWidth: "600px", margin: "0 auto", textAlign: "center" }}>
             <h1>Wordle</h1>
             {isGameOver && (
                 <>
                     <h2>GRATTIS, du gissade rätt!</h2>
-                    <p>Tid: {Math.floor((endTime - startTime) / 1000)} sekunder</p>
+                    <p>Tid: {time} sekunder</p>
 
                     <input
                         placeholder="Ditt namn"
@@ -94,13 +91,29 @@ function Game() {
                     />
 
                     <button onClick={saveScore}>Spara score</button>
-                    <button onClick={startNewGame}>
-                        New Game
-                    </button>
+                    <button onClick={startNewGame}>New Game</button>
                 </>
             )}
 
+            <div>
+                <label>Längd:</label>
+                <input
+                    type="number"
+                    value={wordLength}
+                    onChange={(e) => setWordLength(Number(e.target.value))}
+                    min="3"
+                    max="8"
+                />
 
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={allowRepeats}
+                        onChange={(e) => setAllowRepeats(e.target.checked)}
+                    />
+
+                </label>
+            </div>
 
             <input
                 disabled={isGameOver}
@@ -118,12 +131,13 @@ function Game() {
                             <span key={j}
                                 style={{
                                     display: "inline-block",
-                                    width: "40px",
-                                    height: "40px",
-                                    lineHeight: "40px",
+                                    width: "50px",
+                                    height: "50px",
+                                    lineHeight: "50px",
                                     borderRadius: "15px",
                                     margin: "5px",
                                     textAlign: "center",
+                                    fontSize: "20px",
                                     fontWeight: "bold",
                                     fontFamily: "Arial, sans-serif",
                                     color: "white",

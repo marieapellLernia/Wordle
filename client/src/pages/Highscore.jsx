@@ -12,15 +12,15 @@ function Highscore() {
   }, []);
 
   return (
-    <div>
+    <div  style={{ maxWidth: "600px", margin: "0 auto", textAlign: "center" }}>
       <h1>Highscores</h1>
 
       {scores.length === 0 && <p>Inga scores ännu</p>}
 
       <ul>
-        {scores.map((score, i) => (
-          <li key={i}>
-            {score.name} - {score.time}s - {score.guesses} guesses
+        {scores.map((score) => (
+          <li key={score._id}>
+            {score.name} - {score.time}s - {score.guesses.length} guesses
           </li>
         ))}
       </ul>

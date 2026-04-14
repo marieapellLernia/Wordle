@@ -3,6 +3,7 @@ import Game from "./pages/Game";
 import Highscore from "./pages/Highscore";
 import About from "./pages/About";
 
+
 function App() {
   return (
     <BrowserRouter>
