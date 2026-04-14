@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get("/highscore", async (req, res) => {
     try {
-  const scores = await Highscore.find();
+  const scores = await Highscore.find().sort({ time: 1, guesses: 1 });
   res.json(scores);
    } catch (err) {
     res.status(500).json([]);

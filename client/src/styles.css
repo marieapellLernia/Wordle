@@ -49,3 +49,34 @@ input {
   border: none;
   margin: 5px;
 }
+
+.highscore-list {
+  list-style: none;
+  padding: 0;
+}
+
+.highscore-list li {
+  background: #1f1f1f;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.highscore-list li:hover {
+  transform: scale(1.02);
+}
+
+.gold {
+  border: 2px solid gold;
+  background: #2a2a00;
+}
+
+.silver {
+  border: 2px solid silver;
+  background: #2a2a2a;
+}
+
+.bronze {
+  border: 2px solid #cd7f32;
+  background: #2a1a0f;
+}

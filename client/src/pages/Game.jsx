@@ -14,8 +14,22 @@ function Game() {
         startNewGame();
     }, [wordLength, allowRepeats]);
 
+    const [error, setError] = useState("");
+
     const handleGuess = async () => {
         if (isGameOver) return;
+
+        if (!guess) {
+            setError("Skriv ett ord först!");
+            return;
+        }
+
+        if (guess.length !== wordLength) {
+            setError(`Ordet måste vara ${wordLength} bokstäver`);
+            return;
+        }
+
+        setError("");
 
         const res = await fetch("http://localhost:5080/api/guess", {
             method: "POST",
@@ -79,6 +93,19 @@ function Game() {
     return (
         <div style={{ maxWidth: "600px", margin: "0 auto", textAlign: "center" }}>
             <h1>Wordle</h1>
+
+            {error && (
+                <p style={{
+                    background: "#D91E36",
+                    color: "white",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    margin: "10px 0"
+                }}>
+                    {error}
+                </p>
+            )}
+            
             {isGameOver && (
                 <>
                     <h2>GRATTIS, du gissade rätt!</h2>
@@ -91,7 +118,7 @@ function Game() {
                     />
 
                     <button onClick={saveScore}>Spara score</button>
-                    <button onClick={startNewGame}>New Game</button>
+                    <button onClick={startNewGame}>Nytt spel</button>
                 </>
             )}
 

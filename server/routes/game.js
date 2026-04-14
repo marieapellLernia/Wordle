@@ -42,8 +42,12 @@ router.get("/word", (req, res) => {
 router.post("/guess", (req, res) => {
   const { guess } = req.body;
 
-  if (!currentWord) {
-    return res.status(400).json({ error: "No game started" });
+  if (!guess) {
+    return res.status(400).json({ error: "No guess provided" });
+  }
+
+  if (guess.length !== currentWord.length) {
+    return res.status(400).json({ error: "Wrong length" });
   }
 
   const result = compareWords(guess, currentWord);
@@ -57,7 +61,7 @@ router.post("/guess", (req, res) => {
   }
 
   res.json({
-     result,
+    result,
     isWin,
     time
   });
