@@ -145,7 +145,10 @@ function Game() {
             <input
                 disabled={isGameOver}
                 value={guess}
-                onChange={(e) => setGuess(e.target.value.toUpperCase())}
+                onChange={(e) => {
+                    setGuess(e.target.value.toUpperCase())
+                    setError("");
+                }}
                 placeholder="Gissa ordet"
             />
 
