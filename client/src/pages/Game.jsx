@@ -8,6 +8,7 @@ function Game() {
     const [playerName, setPlayerName] = useState("");
     const [wordLength, setWordLength] = useState(5);
     const [allowRepeats, setAllowRepeats] = useState(true);
+    const [successMessage, setSuccessMessage] = useState("");
 
 
     useEffect(() => {
@@ -76,7 +77,7 @@ function Game() {
             }),
         });
 
-        alert("Score sparad!");
+        setSuccessMessage("Highscore sparad! 🎉");
     };
 
 
@@ -94,6 +95,18 @@ function Game() {
         <div style={{ maxWidth: "600px", margin: "0 auto", textAlign: "center" }}>
             <h1>Wordle</h1>
 
+            {successMessage && (
+                <p style={{
+                    background: "#44AF69",
+                    color: "white",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    margin: "10px 0"
+                }}>
+                    {successMessage}
+                </p>
+            )}
+
             {error && (
                 <p style={{
                     background: "#D91E36",
@@ -105,7 +118,7 @@ function Game() {
                     {error}
                 </p>
             )}
-            
+
             {isGameOver && (
                 <>
                     <h2>GRATTIS, du gissade rätt!</h2>
