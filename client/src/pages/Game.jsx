@@ -74,6 +74,10 @@ function Game() {
                 name: playerName,
                 time,
                 guesses: history,
+                settings: {
+                    wordLength,
+                    allowRepeats
+                }
             }),
         });
 
@@ -151,6 +155,7 @@ function Game() {
                         checked={allowRepeats}
                         onChange={(e) => setAllowRepeats(e.target.checked)}
                     />
+                    Tillåt upprepningar
 
                 </label>
             </div>
